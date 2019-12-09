@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+  
+    <div class="row">
+
+        <div class="col-md-6 col-sm-12 ">
+            @*<input type="hidden" id="userName" />*@
+            <textarea id="messageInput" class="form-control form-control-lg" placeholder="Enter your message"></textarea>
+            <br />
+            <button type="button" disabled="disabled" class="btn btn-block btn-light btn-outline-success" id="sendButton" value="Send Message">Send</button>
+        </div>
+        <div class="col-md-6 col-sm-12 ">
+            <ul id="messagesList" ></ul>
+        </div>
+    </div>
+  
+</div>
+<script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>

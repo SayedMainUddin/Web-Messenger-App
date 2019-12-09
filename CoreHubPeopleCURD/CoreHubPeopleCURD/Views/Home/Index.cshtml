@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="table-responsive">
+    <table class=" table table-active table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="personList"></tbody>
+    </table>
+</div>
+<form id="frmPerson">
+    <fieldset>
+        <legend>Person Entry</legend>
+        <input type="hidden" id="personId" value="0" />
+        <div class="form-group">
+            <label for="name"></label>
+            <input id="name" />
+        </div>
+        <div class="form-group">
+            <label for="address"></label>
+            <input id="address" />
+        </div>
+        <button class=" btn btn-danger" onclick="$('#personId').val(0)" type="reset" id="btnReset">Reset</button>
+        <button  class=" btn btn-success"type="button" id="btnSubmit">Submit</button>
+    </fieldset>
+</form>
+
+<script src="~/lib/aspnet-signalr/signalr.js"></script>
+
+<script>
+
+
+    "use strict";
+    var connection = new signalR.HubConnectionBuilder().withUrl("/peopleHub").build();
+    
+    connection
+        .start()
+        .then(function () {
+
+            $('#btnSubmit').click(function () {
+
+                var data = {
+                    Id: $('#personId').val(),
+                    Name: $('#name').val(),
+                    Address: $('#address').val()
+                }
+
+                $('#btnReset').click();
+                connection.invoke("SubmitPerson", data);
+
+
+            });
+
+            function GetPerson(id) {
+                connection.invoke("GetPerson", id);
+                connection.on("PersonInfo",
+                    function (person) {
+                        $('#personId').val(person.id);
+                        $('#name').val(person.name);
+                        $('#address').val(person.address);
+                    });
+            };
+            
+            function DeletePerson(id) {
+                connection.invoke("RemovePerson", id);
+            };
+
+            connection.on("PersonIndex",
+                function (persons) {
+                    $("#personList").html(null);
+                    $.each(persons,
+                        function (i, p) {
+                            var tr = '<tr><td>' +
+                                p.id +
+                                '</td><td>' +
+                                p.name +
+                                '</td><td>' +
+                                p.address +
+                                '</td><td>' +
+                                '<button class="btn btn-warning edit" id="edit' +p.id +'">Edit</button>' +
+                                '<button class="btn btn-danger delete" id="delete' +p.id +'">Delete</button>' +
+                                '</td></tr>';
+                            $("#personList").append(tr);
+                            $('button#edit' + p.id).click( function() {
+                                var d = $(this).prop('id');
+                                GetPerson(d.substring(4, d.length));
+                              
+                            });
+                            $('button#delete' + p.id).click( function() {
+
+                                var d = $(this).prop('id');
+                                DeletePerson(d.substring(6, d.length));
+                            });
+                        });
+
+
+                });
+        })
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+
+
+</script>

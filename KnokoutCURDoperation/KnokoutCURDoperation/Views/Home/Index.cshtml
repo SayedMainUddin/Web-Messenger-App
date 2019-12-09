@@ -1,0 +1,148 @@
+﻿@{ 
+    ViewBag.Title = "Home Page";
+}
+
+
+<div data-bind="visible:pagemodel.status()=='index'">
+    <button data-bind="click:createStudent">Add New</button>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody  data-bind="foreach:pagemodel.studentsList">
+            <tr>
+                <td data-bind="text:Id"></td>
+                <td data-bind="text:Name"></td>
+                <td data-bind="text:Subject"></td>
+                <td >
+                    <button data-bind="click:updateStudent">Edit</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+
+
+</div>
+
+
+<div data-bind="visible:pagemodel.status()=='update'">
+    <input class="form-control" data-bind="visible:false, value:pagemodel.student.Id" />
+    <div class="form-group">
+        <label class="control-label">Name</label>
+        <input class="form-control" data-bind="value:pagemodel.student.Name" />
+    </div>
+    <div class="form-group">
+        <label class="control-label">Subject</label>
+        <input class="form-control" data-bind="value:pagemodel.student.Subject" />
+    </div>
+
+    <button data-bind="click:submitStudent">Submit</button>
+</div>
+
+
+
+
+
+
+
+@section scripts
+{
+
+<script src="~/Scripts/knockout-3.5.1.js"></script>
+    <script>
+        var pagemodel = {
+            status: ko.observable('index'),
+            student: {
+                Id: ko.observable(0),
+                Name: ko.observable(),
+                Subject: ko.observable()
+            },
+            studentList: ko.observableArray([])
+        }
+
+        var createStudent = function () {
+            pagemodel.status('update');
+        }
+        var updateStudent = function (student) {
+
+            $.ajax(
+                {
+                    type: 'get',
+                    url: '/api/Students/' + student.Id,
+                    dataType: "json",
+                    cache: false,
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (d) {
+                        pagemodel.student.Id(d.Id);
+                        pagemodel.student.Name(d.Name);
+                        pagemodel.student.Subject(d.Subject);
+
+                    },
+                    error: function () { }
+
+                });
+        }
+
+        var submitStudent = function () {
+            var type = 'post';
+            var url = '/api/Students/';
+            if (pagemodel.student.Id() > 0)
+            {
+                type = 'put';
+                url = '/api/Students/' + pagemodel.student.Id();
+            }
+            var data = {
+                Id: pagemodel.student.Id(),
+                Name: pagemodel.student.Name(),
+                Subject: pagemodel.student.Subject()
+            }
+
+            $.ajax(
+                {
+                    type: type,
+                    url: url,
+                    dataType: "json",
+                    cache: false,
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function () { },
+                    error: function () { }
+
+                });
+        }
+        var loadStudentList = function () {
+            $.ajax(
+                {
+                    type: 'get',
+                    url: '/api/Students/',
+                    dataType: "json",
+                    cache: false,
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (students) {
+                        pagemodel.studentList(students);
+                    },
+                    error: function () { }
+
+                });
+
+        }
+
+
+
+
+
+        ko.applyBindings();
+    </script>
+    }

@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div>
+    <div>
+        <label>Message : </label>
+        <input id="txtMessage" data-bind="value:message"/>
+        <button id="btnSubmit" data-bind="clink:alertKello">Submit</button>
+    </div>
+    <label id="result" data-dind="text:knModel.message">
+
+    </label>
+</div>
+@section scripts
+{
+
+    <script src="~/Scripts/knockout-3.5.1.js"></script>
+    <script>
+        var knModel = {
+            message: ko.observable("Hello")
+        }
+        var alterHello = function () {
+            knModel.message('fhyfigh');
+        }
+        ko.applyBindings();
+    </script>
+}

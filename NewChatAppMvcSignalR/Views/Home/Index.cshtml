@@ -1,0 +1,106 @@
+﻿
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.6.4.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script src="~/signalr/js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+</head>
+<body>
+    <div>
+        <label for="txtMessage" class="Control-label">Message</label>
+        <input id="txtMessage" class="form-Control" placeholder="Your Message Type here...." />
+        <button id="btnSend" type="button" class="btn btn-success">Send</button>
+    </div>
+    <div>
+        <ul id="records"></ul>
+    </div>
+    <script>
+        var hub = $.connection.messenger;
+        var connected = false;
+        var username;
+        hub.client.receive = function (msg) {
+            $('#records').append('<li>' + msg['Sender'] + ' : ' + msg['Content'] + '</li>');
+        }
+
+        hub.client.receiveLog = function (messageList) {
+            $('#records').html(null);
+            $.each(messageList, function (idx, msg) {
+                $('#records').append('<li>' + msg['Sender'] + ' : ' + msg['Content'] + '</li>');
+
+            })
+
+        }
+        $('#btnSend').click(function () {
+
+            if (connected) {
+                var msg = $('#txtMessage').val();
+                $('#txtMessage').val(null);
+                hub.server.sendMessage(username, msg);
+            }
+        })
+        $.connection.hub.start().done(function () {
+            connected = true;
+            username = prompt('Enter Your Name Here');
+            hub.server.getLog();
+        })
+    </script>
+
+</body>
+</html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script src="~/Scripts/jquery-1.6.4.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script src="~/signalr/js"></script>
+</head>
+<body>
+    <div>
+        <label for="txtMessage" class="Control-label">Message</label>
+        <input id="txtMessage" class="form-Control" placeholder="Your Message Type here...." />
+        <button id="btnSend" type="button" class="btn btn-success">Send</button>
+    </div>
+    <div>
+        <ul id="records"></ul>
+    </div>
+    <script>
+        var hub = $.connection.messenger;
+        var connected = false;
+        var username;
+        hub.client.receive = function (msg) {
+            $('#records').append('<li>' + msg['Sender'] + ' : ' + msg['Content'] + '</li>');
+        }
+
+        hub.client.receiveLog = function (messageList) {
+            $('#records').html(null);
+            $.each(messageList, function (idx, msg) {
+                $('#records').append('<li>' + msg['Sender'] + ' : ' + msg['Content'] + '</li>');
+
+            })
+
+        }
+        $('#btnSend').click(function () {
+
+            if (connected) {
+                var msg = $('#txtMessage').val();
+                $('#txtMessage').val(null);
+                hub.server.sendMessage(username, msg);
+            }
+        })
+        $.connection.hub.start().done(function () {
+            connected = true;
+            username = prompt('Enter Your Name Here');
+            hub.server.getLog();
+        })
+    </script>
+
+</body>
+</html>

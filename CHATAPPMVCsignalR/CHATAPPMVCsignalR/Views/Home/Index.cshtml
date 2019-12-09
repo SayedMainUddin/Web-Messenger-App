@@ -1,0 +1,62 @@
+﻿
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script src="~/Scripts/jquery-1.6.4.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script src="~/signalr/js"></script>
+</head>
+<body>
+    <div class="form-group">
+        <label for="txtMessage" class="Control-label">Message</label>
+        <input id="txtMessage" class="form-Control" placeholder="Message type here.........." />
+        <button id="btnSend" type="button" class="btn btn-success">Send</button>
+    </div>
+    <div class="col-md-6">
+        <ul id="dialog" class="" style="box-shadow: lightgray 0 0 2px 3px"></ul>
+    </div>
+    <script>
+
+        var hub = $.connection.messenger;
+        var connected = false;
+        var username;
+
+        hub.client.receive = function (user, message) {
+            $('#dialog').append('<dt>' + user + '</dt>');
+            $('#dialog').append('<dd>' + message + '</dd>');
+        }
+        hub.client.receiveLog = function (messageList) {
+            $('#dialog').html(null);
+            $.each(messageList, function (idx, msg) {
+
+                $('#dialog').append('<dt>' + msg["Sender"] + '</dt>');
+                $('#dialog').append('<dd>' + msg["Content"] + '</dd>');
+            });
+        };
+        $('#btnSend').click(function () {
+            if (connected) {
+
+                var msg = $('#txtMessage').val();
+                $('#txtMessage').val(null);
+                hub.server.sendMessage(username, msg);
+
+            }
+        });
+
+
+        $.connection.hub.start().done(function () {
+            connected = true;
+            username = prompt("Enter your name");
+
+            hub.server.getLog();
+        });
+
+
+
+    </script>
+</body>
+</html>

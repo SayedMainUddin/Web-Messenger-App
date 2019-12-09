@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    div { margin: 3px; }
+    canvas { border: 2px solid #808080; cursor: default; }
+</style>
+<script src="~/Scripts/Drawingboatd.js"></script>
+<div>
+    <div>
+        <label for="color">Color: </label>
+        <select id="color"></select>
+    </div>
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <div>
+        <button id="clear">Clear canvas</button>
+    </div>
+</div>

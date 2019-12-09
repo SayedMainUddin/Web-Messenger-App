@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<script src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+<script src="~/myhub/hubs"></script>
+<div class="container " style="margin-top:20px">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="txtMessage" class="control-label">Message</label>
+            <input id="txtMessage" class="form-control" placeholder="Enter message" />
+        </div>
+        <button id="btnSend" type="button" class="btn btn-success">Send</button>
+    </div>
+    <div class="col-md-6">
+        <ul id="dialog" class="" style="box-shadow: lightgray 0 0 2px 3px"></ul>
+    </div>
+</div>
+<script>
+    $(function () {
+        var connected = false;
+        var hub = $.connection.chatHub;
+        hub.client.message = function (msg) {
+            $('#dialog').append('<li>' + msg + '</li>');
+        };
+        $('#btnSend').click(function () {
+            if (connected === true) {
+                var msg = $('#txtMessage').val();
+                $('#txtMessage').val(null);
+                hub.server.send(msg);
+            }
+            else {
+                alert('not connected');
+            }
+        });
+        $.connection.hub.start()
+            .done(function () {
+                connected = true;
+            });
+    });
+</script>
+
+
